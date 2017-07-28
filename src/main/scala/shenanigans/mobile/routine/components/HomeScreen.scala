@@ -4,24 +4,25 @@ import sri.macros.{OptDefault => NoValue, OptionalParam => U}
 import sri.navigation._
 import sri.universal.components._
 import sri.universal.styles.InlineStyleSheetUniversal
-import shenanigans.mobile.routine.components.ScreenWithParams.Params
 
 import scala.scalajs.js
 
 
-class HomeScreen extends NavigationScreenComponentNoPS {
+class HomeScreen extends NavigationScreenComponentS[HomeScreen.State] {
   import HomeScreen._
+
+  initialState(State("test"))
+
+  def changeText(text: String) = {
+    println("my console log", state)
+    this.setState((s: State) => s.copy(textInput = text))
+  }
+
   def render() = {
     View(style = styles.container)(
-      getBlock(() =>
-                 navigation.navigate[ScreenWithParams](new Params {
-                   override val title: String = "Second title"
-                 }),
-               "Screen With Params"),
-      getBlock(() => navigation.navigate[ScreenWithCustomRightButton],
-               "Screen With Right Button"),
-      getBlock(() => navigation.navigate[LazyLoadScreen], "LazyLoad Screen"),
-      getBlock(() => navigation.navigate[AboutScreen], "About Screen")
+//      TextInput(onChangeText = (t: String) => changeText(t), style = styles.input),
+      TextInput(onChangeText = changeText(_), style = styles.input),
+      Text()(state.textInput)
     )
   }
 
@@ -37,6 +38,8 @@ class HomeScreen extends NavigationScreenComponentNoPS {
 }
 
 object HomeScreen {
+  case class State(textInput: String)
+
 
   object styles extends InlineStyleSheetUniversal {
 
@@ -47,6 +50,13 @@ object HomeScreen {
       padding := 20,
       flexDirection.row,
       flexWrap.wrap
+    )
+
+    val input = style(
+      borderColor := "black",
+      borderStyle := "solid",
+      borderWidth := 1,
+      width := 300
     )
 
     val block = style(

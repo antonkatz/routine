@@ -3,12 +3,14 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "react-native start server --transformer scalajsTransformer.js"
+    "start": "react-native start server --transformer scalajsTransformer.js",
+    "devtools": "node ./node_modules/react-devtools/bin.js"
   },
   "dependencies": {
-    "react": "16.0.0-alpha.12",
-    "react-native": "0.46.0",
     "prop-types": "^15.5.8",
+    "react": "16.0.0-alpha.12",
+    "react-devtools": "^2.5.0",
+    "react-native": "0.46.0",
     "react-navigation": "^1.0.0-beta.11"
   },
   "devDependencies": {
