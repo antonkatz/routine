@@ -1,18 +1,33 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import IssueInsert from './IssueInsert'
-import JiraComms from "./JiraComms";
 
+function onChangeWithWait() {
+  window.setTimeout(onChange, 1000)
+}
 
-window.onload = function() {
-  // let insertInto = window.document.getElementById("ghx-detail-head")
+let pomodoroControls = null
+
+function onChange() {
   let insertInto = window.document.getElementById("ghx-detail-head")
+  let hasPomodoroControls = window.document.getElementById("pomodoro-controls")
 
-  if (insertInto) {
-    // let keyGroup = insertInto.getElementsByClassName("ghx-key-group")[0]
-    let app = document.createElement("div")
-    insertInto.insertBefore(app, insertInto.firstChild)
+  console.log("pomodorocontroal", pomodoroControls)
+  console.log('has', hasPomodoroControls)
+  console.log("inster", insertInto)
 
-    ReactDOM.render(<IssueInsert/>, app);
+  if (!hasPomodoroControls && insertInto) {
+    if (!pomodoroControls) {
+      pomodoroControls = document.createElement("div")
+      pomodoroControls.id = "pomodoro-controls"
+    }
+    insertInto.insertBefore(pomodoroControls, insertInto.firstChild)
+    ReactDOM.render(<IssueInsert/>, pomodoroControls);
   }
 }
+
+window.onload = onChange
+window.addEventListener("click", onChangeWithWait)
+window.addEventListener("dragend", onChangeWithWait)
+// chrome.tabs.onActivated.addListener(() => {alert("activated")})
+// window.addEventListener()

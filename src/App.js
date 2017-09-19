@@ -9,13 +9,14 @@ class App extends Component {
   constructor() {
     super()
     this.state = {
-      forDate: new Date()
+      forDate: new Date().setHours(0,0,0,0)
     }
 
     this.onDateChange = this.onDateChange.bind(this)
   }
 
   onDateChange(date) {
+    date.setHours(0,0,0,0)
     this.setState({forDate: date})
   }
 
@@ -103,13 +104,12 @@ let TaskListDisplay = (props) => {
   return (
     <div style={styles.root}>
       <GridList
-        cellHeight={50}
         style={styles.list}
       >
         {props.logs.map((l) => {
           return (<GridTile key={l.id} style={styles.tile}>
             <p>{l.name ? l.name : "loading..."}</p>
-            <p>{Utils.secondsToHuman(l.time)}</p>
+            <p>{Utils.secondsToHuman(l.time, false)}</p>
           </GridTile>)
         })}
       </GridList>
