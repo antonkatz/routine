@@ -1,0 +1,24 @@
+{
+  "manifest_version": 2,
+
+  "name": "Jira pomodoro",
+  "description": "Adds a pomodoro button to jira that tracks spent time",
+  "version": "1.0",
+
+  "permissions": [
+    "activeTab",
+    "cookies",
+    "*://*.atlassian.net/*"
+  ],
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "index.html"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["*://*.atlassian.net/*"],
+      "js": ["contentscript.js"]
+    }
+  ]
+}
