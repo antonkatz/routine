@@ -1,17 +1,20 @@
 import React, {Component} from 'react';
 import JiraComms from './JiraComms'
-
+import Utils from './utils'
 class IssueInsert extends Component {
   constructor() {
     super()
-    this.jira = new JiraComms()
 
     this.pomodoroDuration = 60 * 15
-    this.breakDuration = 60 * 2
+    this.shortBreakDuration = 60 * 2
+    this.longBreakDuration = 60 * 2
+    this.breaksBeforeLong = 6
 
     this.state = {
       pomodoroTime: 0,
       breakTime: 0,
+      breaksCount: 0,
+      breakDuration: this.shortBreakDuration,
       counter: null,
       inPomodoro: true
     }
@@ -19,22 +22,32 @@ class IssueInsert extends Component {
     this.stop = this.stop.bind(this)
   }
 
+  /** @return duration of break */
+  breakPomodoro() {
+    this.setState({breaksCount: this.state.breaksCount + 1, inPomodoro: false})
+    if (this.state.breaksCount >= this.breaksBeforeLong) {
+      this.setState({breaksCount: 0})
+      this.setState({breakDuration: this.longBreakDuration})
+    } else {
+      this.setState({breakDuration: this.shortBreakDuration})
+    }
+
+    this.playSound()
+    this.log()
+  }
+
   count() {
     if (this.state.inPomodoro) {
       if (this.state.pomodoroTime >= this.pomodoroDuration) {
-        this.setState({
-          inPomodoro: false
-        })
-        this.log()
+        this.breakPomodoro()
       }
       this.setState({
         pomodoroTime: this.state.pomodoroTime + 1
       })
     } else {
-      if (this.state.breakTime >= this.breakDuration) {
-        this.setState({
-          inPomodoro: true
-        })
+      if (this.state.breakTime >= this.state.breakDuration) {
+        this.playSound()
+        this.stop()
       }
       this.setState({
         breakTime: this.state.breakTime + 1
@@ -43,7 +56,9 @@ class IssueInsert extends Component {
   }
 
   log() {
-    this.jira.logTime()
+    if (this.state.pomodoroTime >= 60) {
+      JiraComms.logTime(this.state.pomodoroTime)
+    }
   }
 
   resetTime() {
@@ -51,6 +66,10 @@ class IssueInsert extends Component {
       pomodoroTime: 0,
       breakTime: 0
     })
+  }
+
+  playSound() {
+    chrome.runtime.sendMessage({play: true});
   }
 
   start() {
@@ -73,10 +92,6 @@ class IssueInsert extends Component {
     })
   }
 
-  pause() {
-
-  }
-
   render() {
     return (
       <div>
@@ -84,23 +99,17 @@ class IssueInsert extends Component {
           <a onClick={this.start}>Start</a>
           <a onClick={this.stop}>Stop</a>
         </p>
-        <Timer ptime={this.state.pomodoroTime} btime={this.state.breakTime} inpom={this.state.inPomodoro}/>
+        <TimerDisplay ptime={this.state.pomodoroTime} btime={this.state.breakTime} inpom={this.state.inPomodoro}/>
       </div>
     );
   }
 }
 
-class Timer extends Component {
-  display(seconds) {
-    let min = Math.floor(seconds / 60).toFixed(0)
-    let s = seconds % 60
-    return min + "m " + s + "s"
-  }
-
+class TimerDisplay extends Component {
   render() {
     let label = this.props.inpom ? "Pomodoro" : "Break"
     let time = this.props.inpom ? this.props.ptime : this.props.btime
-    return (<p>{label} {this.display(time)} </p>)
+    return (<p>{label} {Utils.secondsToHuman(time)} </p>)
   }
 }
 

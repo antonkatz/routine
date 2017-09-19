@@ -4,6 +4,7 @@ module.exports = {
   entry: {
     contentscript: "./src/content-script.js",
     index: "./src/index.js",
+    background: "./src/background.js"
   },
   output: {
     path: __dirname + "/extension",
@@ -27,6 +28,10 @@ module.exports = {
       {
         test: /\.(png|jpg|svg)$/,
         loaders: ['url', 'image-webpack']
+      },
+      {
+        test: /\.mp3$/,
+        loader: 'file-loader'
       }
     ]
   },

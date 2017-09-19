@@ -2,3 +2,5 @@ node_modules
 .idea
 extension/contentscript.js
 extension/index.js
+*.iml
+extension/*.mp3
