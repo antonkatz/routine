@@ -18,20 +18,30 @@ export default class JiraComms {
   }
 
   static getIssueKey() {
-    let uri = URI(window.location.href)
+    let uri = URI(window.location.href);
     let queries = uri.query().split("&").map((q) => {
-      let qv = q.split("=")
+      let qv = q.split("=");
       return ({name: qv[0], value: qv[1]})
-    })
-    let issueQuery = queries.find((q) => q.name === "selectedIssue")
-    return issueQuery ? issueQuery.value : null
+    });
+    let issueQuery = queries.find((q) => q.name === "selectedIssue");
+    console.log("Current issue " + (issueQuery ? issueQuery.value : "none"));
+    return issueQuery ? issueQuery.value : JiraComms.getIssueByBrowseDir()
   }
 
-  static logTime(seconds) {
-    console.log("Logging seconds", seconds)
+  static getIssueByBrowseDir() {
+    let uri = URI(window.location.href);
+    if (uri.directory() === "/browse") {
+      return uri.segment()[1]
+    } else {
+      return null
+    }
+  }
+
+  static logTime(seconds, issueKey) {
+    console.log("Logging seconds", seconds);
 
     let xhr = new XMLHttpRequest();
-    xhr.open("POST", JiraComms.getBaseUrl() + "/rest/api/2/issue/" + JiraComms.getIssueKey() + "/worklog", true);
+    xhr.open("POST", JiraComms.getBaseUrl() + "/rest/api/2/issue/" + issueKey + "/worklog", true);
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onreadystatechange = function () {
       if (xhr.readyState === 4) {
@@ -44,12 +54,12 @@ export default class JiraComms {
   }
 
   static getWorklogs(from, to, callback) {
-    let infoGetter = (ids) => JiraComms.getWorklogsInfo(ids, callback)
+    let infoGetter = (ids) => JiraComms.getWorklogsInfo(ids, callback);
     JiraComms.getWorlogIds(from, to, infoGetter)
   }
 
   static getWorklogsInfo(ids, callback) {
-    let uri = URI(JiraComms.getBaseUrl() + "/rest/api/2/worklog/list")
+    let uri = URI(JiraComms.getBaseUrl() + "/rest/api/2/worklog/list");
 
     let xhr = new XMLHttpRequest();
     xhr.open("POST", uri, true);
@@ -58,7 +68,7 @@ export default class JiraComms {
       if (xhr.readyState === 4) {
         let info = JSON.parse(xhr.response).map((i) => {
           return {time: i.timeSpentSeconds, issueId: i.issueId}
-        })
+        });
         callback(info)
       }
     };
@@ -66,8 +76,8 @@ export default class JiraComms {
   }
 
   static getWorlogIds(from, to, callback) {
-    let uri = URI(JiraComms.getBaseUrl() + "/rest/api/2/worklog/updated")
-    uri = uri.query({since: from, expand: "timeSpentSeconds,issueId"})
+    let uri = URI(JiraComms.getBaseUrl() + "/rest/api/2/worklog/updated");
+    uri = uri.query({since: from, expand: "timeSpentSeconds,issueId"});
     let xhr = new XMLHttpRequest();
     xhr.open("GET", uri, true);
     xhr.setRequestHeader("Content-Type", "application/json");
@@ -77,7 +87,7 @@ export default class JiraComms {
           return l.updatedTime <= to
         }).map((l) => {
           return l.worklogId
-        })
+        });
         callback(ids)
       }
     };
@@ -85,7 +95,7 @@ export default class JiraComms {
   }
 
   static getIssueInfo(id, callback) {
-    let uri = URI(JiraComms.getBaseUrl() + "/rest/api/2/issue/" + id)
+    let uri = URI(JiraComms.getBaseUrl() + "/rest/api/2/issue/" + id);
 
     let xhr = new XMLHttpRequest();
     xhr.open("GET", uri, true);

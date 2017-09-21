@@ -26,8 +26,10 @@ function onChange() {
   }
 }
 
-window.onload = onChange;
-window.addEventListener("click", onChangeWithWait);
-window.addEventListener("dragend", onChangeWithWait);
+onChange();
+
+// window.onload = onChange;
+// window.addEventListener("click", onChange);
+// window.addEventListener("dragend", onChange);
 // chrome.tabs.onActivated.addListener(() => {alert("activated")})
 // window.addEventListener()

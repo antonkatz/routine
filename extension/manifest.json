@@ -20,7 +20,11 @@
   "content_scripts": [
     {
       "matches": ["*://*.atlassian.net/*"],
-      "js": ["contentscript.js"]
+      "js": [
+        "contentscript.js"
+      ],
+      "run_at": "document_end",
+      "all_frames": true
     }
   ]
 }

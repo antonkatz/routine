@@ -8,11 +8,13 @@ class IssueInsert extends Component {
     super();
 
     this.pomodoroDuration = 60 * 15;
+    // this.pomodoroDuration = 2;
     this.shortBreakDuration = 60 * 2;
     this.longBreakDuration = 60 * 2;
     this.breaksBeforeLong = 6;
 
     this.state = {
+      trackingIssue: JiraComms.getIssueKey(),
       pomodoroTime: 0,
       breakTime: 0,
       breaksCount: 0,
@@ -20,6 +22,7 @@ class IssueInsert extends Component {
       counter: null,
       inPomodoro: true
     };
+
     this.start = this.start.bind(this);
     this.stop = this.stop.bind(this)
   }
@@ -61,9 +64,14 @@ class IssueInsert extends Component {
   }
 
   log() {
-    if (this.state.pomodoroTime >= 60) {
-      JiraComms.logTime(this.state.pomodoroTime)
+    if (this.state.trackingIssue) {
+      if (this.state.pomodoroTime >= 60) {
+        JiraComms.logTime(this.state.pomodoroTime, this.state.trackingIssue)
+      }
+    } else {
+      alert("Could not log. No issue")
     }
+    // fixme
     this.setState({pomodoroTime: 0})
   }
 
@@ -85,6 +93,7 @@ class IssueInsert extends Component {
   start() {
     this.log();
     this.resetTime();
+    this.setTrackingIssue();
 
     let f = this.count.bind(this);
     if (!this.state.counter) {
@@ -105,6 +114,11 @@ class IssueInsert extends Component {
     this.resetTime()
   }
 
+  setTrackingIssue() {
+    let issue = JiraComms.getIssueKey();
+    this.setState({trackingIssue: issue})
+  }
+
   render() {
     return (
       <div style={{backgroundColor: 'green'}}>
@@ -112,7 +126,8 @@ class IssueInsert extends Component {
           <a onClick={this.start}>Start</a>
           <a onClick={this.stop}>Stop</a>
         </p>
-        <TimerDisplay ptime={this.state.pomodoroTime} btime={this.state.breakTime} inpom={this.state.inPomodoro}/>
+        <TimerDisplay issue={this.state.trackingIssue} ptime={this.state.pomodoroTime} btime={this.state.breakTime}
+                      inpom={this.state.inPomodoro}/>
       </div>
     );
   }
@@ -122,7 +137,7 @@ class TimerDisplay extends Component {
   render() {
     let label = this.props.inpom ? "Pomodoro" : "Break";
     let time = this.props.inpom ? this.props.ptime : this.props.btime;
-    return (<p>{label} {Utils.secondsToHuman(time)} </p>)
+    return (<p>{this.props.issue} {label} {Utils.secondsToHuman(time)} </p>)
   }
 }
 
