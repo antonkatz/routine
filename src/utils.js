@@ -14,4 +14,10 @@ export default class Utils {
     }
     return hStr + min + "m " + s
   }
+
+  static sumTimeOfTasks(tasks, logs) {
+    let times = tasks.map(t => (logs[t.id]))
+    console.log("sum of tasks", times)
+    return times.reduce((a, b) => (a + b))
+  }
 }

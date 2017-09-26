@@ -22,7 +22,9 @@ export default class Data {
 
   static singleIssueParser(i) {
     let f = i.fields
-    return {"key": i.key, type: f.issuetype.name, projectName: f.project.name,
+    console.log("single issue parser", f.customfield_10008)
+    return {
+      id: i.id, key: i.key, type: f.issuetype.name, projectName: f.project.name,
       summary: f.summary, epicKey: f.customfield_10008}
   }
 }

@@ -1,8 +1,7 @@
 import React, {Component} from 'react';
-import './App.css';
+import './styles/App.css';
 import DatePicker from 'material-ui/DatePicker';
-import JiraComms from './data/JiraComms'
-import Utils from "./utils"
+import TaskMaster from "./tasks/TaskMaster"
 
 class App extends Component {
   constructor() {
@@ -24,94 +23,10 @@ class App extends Component {
       <div>
         <DatePicker hintText="Pick date" defaultDate={new Date()} onChange={(discard, date) => this.onDateChange(date)}
                     autoOk={true}/>
-        <TaskList date={this.state.forDate}/>
+        <TaskMaster date={this.state.forDate}/>
       </div>
     );
   }
 }
-
-class TaskList extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      logs: []
-    };
-    this.setLogs = this.setLogs.bind(this);
-
-    this.getTasks()
-  }
-
-  getTasks(props) {
-    let from = props ? props.date.valueOf() : this.props.date.valueOf();
-    let to = from + 24 * 60 * 60 * 1000;
-    JiraComms.getWorklogs(from, to, this.setLogs)
-  }
-
-  setLogs(logs) {
-    let reduced = this.reduceLogs(logs);
-    this.setState({logs: reduced});
-    this.mapIssueNames()
-  }
-
-  mapIssueNames() {
-    let logs = [];
-    this.state.logs.forEach((l) => {
-      JiraComms.getIssueInfo(l.id, (info) => {
-        logs.push(Object.assign({}, l, {name: info.fields.summary}));
-        this.setState({logs: logs})
-      })
-    })
-  }
-
-  reduceLogs(logs) {
-    let reduced = [];
-    logs.forEach((l) => {
-      let existing = reduced.find((o) => (o.id === l.issueId));
-      if (existing) {
-        existing.time = existing.time + l.time
-      } else {
-        reduced.push({id: l.issueId, time: l.time})
-      }
-    });
-    return reduced
-  }
-
-  componentWillReceiveProps(nextProps) {
-    this.getTasks(nextProps)
-  }
-
-  render() {
-    return (<TaskListDisplay logs={this.state.logs}/>)
-  }
-}
-
-let TaskListDisplay = (props) => {
-  const styles = {
-    root: {
-      display: 'flex',
-      flexWrap: 'wrap',
-      justifyContent: 'space-around',
-    },
-    list: {
-      // display: 'flex',
-      // justifyContent: 'space-around'
-    },
-    tile: {}
-  };
-
-  return (
-    <div style={styles.root}>
-      <ul
-        style={styles.list}
-      >
-        {props.logs.map((l) => {
-          return (<li key={l.id} style={styles.tile}>
-            <p>{l.name ? l.name : "loading..."}</p>
-            <p>{Utils.secondsToHuman(l.time, false)}</p>
-          </li>)
-        })}
-      </ul>
-    </div>)
-};
 
 export default App;

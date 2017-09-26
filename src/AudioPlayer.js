@@ -1,4 +1,4 @@
-import BellSound from './bell.mp3'
+import BellSound from './resources/bell.mp3'
 
 export default class AudioPlayer {
   constructor() {
