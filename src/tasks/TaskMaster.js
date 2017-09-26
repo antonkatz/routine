@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import JiraComms from '../data/JiraComms'
 import Data from "../data/Data";
 import TaskDisplay from "./TaskDisplay";
+import TimeLine from "./TimeLine"
 
 export default class TaskMaster extends Component {
   constructor(props) {
@@ -86,6 +87,7 @@ export default class TaskMaster extends Component {
     return (
       <div>
         <TaskDisplay logs={this.state.logs} tasks={this.state.tasks}/>
+        <TimeLine logs={this.state.logs}/>
       </div>
     )
     // return (<span>Nothing for now</span>)
