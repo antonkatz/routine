@@ -2,5 +2,7 @@ node_modules
 .idea
 extension/contentscript.js
 extension/index.js
+extension/background.js
 *.iml
 extension/*.mp3
+package-lock.json
