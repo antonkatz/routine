@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import JiraComms from './JiraComms'
+import JiraComms from './data/JiraComms'
 import Utils from './utils'
 
 

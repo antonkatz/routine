@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import './App.css';
 import DatePicker from 'material-ui/DatePicker';
-import JiraComms from './JiraComms'
+import JiraComms from './data/JiraComms'
 import Utils from "./utils"
 
 class App extends Component {

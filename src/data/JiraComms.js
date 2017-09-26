@@ -40,6 +40,8 @@ export default class JiraComms {
   static logTime(seconds, issueKey) {
     console.log("Logging seconds", seconds);
 
+    // fixme shift by time into the past
+
     let xhr = new XMLHttpRequest();
     xhr.open("POST", JiraComms.getBaseUrl() + "/rest/api/2/issue/" + issueKey + "/worklog", true);
     xhr.setRequestHeader("Content-Type", "application/json");
@@ -55,7 +57,7 @@ export default class JiraComms {
 
   static getWorklogs(from, to, callback) {
     let infoGetter = (ids) => JiraComms.getWorklogsInfo(ids, callback);
-    JiraComms.getWorlogIds(from, to, infoGetter)
+    JiraComms.getWorklogIds(from, to, infoGetter)
   }
 
   static getWorklogsInfo(ids, callback) {
@@ -75,7 +77,7 @@ export default class JiraComms {
     xhr.send(JSON.stringify({ids: ids}));
   }
 
-  static getWorlogIds(from, to, callback) {
+  static getWorklogIds(from, to, callback) {
     let uri = URI(JiraComms.getBaseUrl() + "/rest/api/2/worklog/updated");
     uri = uri.query({since: from, expand: "timeSpentSeconds,issueId"});
     let xhr = new XMLHttpRequest();
@@ -106,5 +108,18 @@ export default class JiraComms {
       }
     };
     xhr.send();
+  }
+
+  static getEpics(callback) {
+    let uri = JiraComms.getBaseUrl() + "/rest/api/2/search?jql=issuetype=Epic"
+    // let uri = JiraComms.getBaseUrl() + "/rest/api/2/search"
+
+    fetch(uri, {
+      method: "GET",
+      credentials: "same-origin",
+      // body: {"jql": "issuetype=Epic"}
+    }).then((resp) => {
+      resp.json().then((data) => callback(data.issues))
+    })
   }
 }

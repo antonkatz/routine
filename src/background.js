@@ -1,5 +1,5 @@
 import AudioPlayer from './AudioPlayer'
-import JiraComms from './JiraComms'
+import JiraComms from './data/JiraComms'
 
 new AudioPlayer()
 
